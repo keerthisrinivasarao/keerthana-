@@ -1,21 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Signup Login</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<title>Signup Page</title>
 
 <style>
-
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:Arial;
+    font-family:Arial,sans-serif;
 }
 
 body{
@@ -23,312 +18,141 @@ body{
     display:flex;
     justify-content:center;
     align-items:center;
-    background:linear-gradient(135deg,#2563eb,#06b6d4);
+    background:linear-gradient(135deg,#4facfe,#00f2fe);
 }
 
-.box{
+.container{
     width:350px;
-    background:white;
+    background:#fff;
     padding:30px;
-    border-radius:20px;
-    box-shadow:0 10px 25px rgba(0,0,0,0.2);
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.3);
 }
 
 h2{
     text-align:center;
     margin-bottom:20px;
+    color:#333;
 }
 
-input{
+.input-box{
+    margin-bottom:15px;
+}
+
+.input-box label{
+    display:block;
+    margin-bottom:5px;
+    font-weight:bold;
+}
+
+.input-box input{
     width:100%;
     padding:12px;
-    margin-top:12px;
     border:1px solid #ccc;
-    border-radius:10px;
+    border-radius:8px;
+    outline:none;
+}
+
+.input-box input:focus{
+    border-color:#4facfe;
 }
 
 button{
     width:100%;
     padding:12px;
-    margin-top:15px;
     border:none;
-    border-radius:10px;
-    background:#2563eb;
+    border-radius:8px;
+    background:#4facfe;
     color:white;
     font-size:16px;
     cursor:pointer;
+    transition:0.3s;
 }
 
 button:hover{
-    background:#1d4ed8;
+    background:#00c6fb;
 }
 
 #message{
-    text-align:center;
     margin-top:15px;
+    text-align:center;
     font-weight:bold;
 }
-
-.link{
-    text-align:center;
-    margin-top:15px;
-}
-
-.link span{
-    color:#2563eb;
-    cursor:pointer;
-    font-weight:bold;
-}
-
 </style>
-
 </head>
 
 <body>
 
-<div class="box">
+<div class="container">
 
-<!-- SIGNUP -->
+    <h2>Signup Form</h2>
 
-<div id="signupPage">
+    <div class="input-box">
+        <label>Name</label>
+        <input type="text" id="name" placeholder="Enter Name">
+    </div>
 
-<h2>Create Account</h2>
+    <div class="input-box">
+        <label>Mobile Number</label>
+        <input type="text" id="mobile" placeholder="Enter Mobile Number">
+    </div>
 
-<input type="text"
-id="signupName"
-placeholder="Enter Name">
+    <div class="input-box">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="Enter Password">
+    </div>
 
-<input type="text"
-id="signupMobile"
-placeholder="Enter Mobile Number">
+    <button onclick="signup()">Signup</button>
 
-<input type="password"
-id="signupPassword"
-placeholder="Enter Password">
-
-<button onclick="signup()">
-Sign Up
-</button>
-
-<div class="link">
-Already have account?
-<span onclick="showLogin()">
-Login
-</span>
-</div>
+    <div id="message"></div>
 
 </div>
 
-<!-- LOGIN -->
-
-<div id="loginPage" style="display:none;">
-
-<h2>Login</h2>
-
-<input type="text"
-id="loginMobile"
-placeholder="Enter Mobile Number">
-
-<input type="password"
-id="loginPassword"
-placeholder="Enter Password">
-
-<button onclick="login()">
-Login
-</button>
-
-<div class="link">
-Create account?
-<span onclick="showSignup()">
-Signup
-</span>
-</div>
-
-</div>
-
-<div id="message"></div>
-
-</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <script>
 
-/////////////////////////////////////////////////////
-// SUPABASE
-/////////////////////////////////////////////////////
+const SUPABASE_URL = "https://paxhlgosqmjrbpualroy.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_6JDa2H1RxowQaJhgI00YNQ_yCSiXPUK";
 
-const SUPABASE_URL =
-"https://jigjtjtdnquxxunplqbl.supabase.co";
-
-const SUPABASE_KEY =
-"sb_publishable_gD-xjaAktGM3yzC_YyAnCQ_5uZOcBIV";
-
-const client =
-supabase.createClient(
+const supabaseClient = supabase.createClient(
     SUPABASE_URL,
-    SUPABASE_KEY
+    SUPABASE_ANON_KEY
 );
-
-/////////////////////////////////////////////////////
-// SHOW LOGIN
-/////////////////////////////////////////////////////
-
-function showLogin(){
-
-    document.getElementById("signupPage")
-    .style.display="none";
-
-    document.getElementById("loginPage")
-    .style.display="block";
-
-    document.getElementById("message")
-    .innerHTML="";
-}
-
-/////////////////////////////////////////////////////
-// SHOW SIGNUP
-/////////////////////////////////////////////////////
-
-function showSignup(){
-
-    document.getElementById("signupPage")
-    .style.display="block";
-
-    document.getElementById("loginPage")
-    .style.display="none";
-
-    document.getElementById("message")
-    .innerHTML="";
-}
-
-/////////////////////////////////////////////////////
-// SIGNUP
-/////////////////////////////////////////////////////
 
 async function signup(){
 
-    let name =
-    document.getElementById("signupName").value;
+    let name = document.getElementById("name").value;
+    let mobile = document.getElementById("mobile").value;
+    let password = document.getElementById("password").value;
 
-    let mobile =
-    document.getElementById("signupMobile").value;
-
-    let password =
-    document.getElementById("signupPassword").value;
-
-    if(name==="" ||
-       mobile==="" ||
-       password===""){
-
-        document.getElementById("message")
-        .innerHTML="Fill all fields";
-
+    if(name === "" || mobile === "" || password === ""){
+        document.getElementById("message").innerHTML = "Fill all fields";
+        document.getElementById("message").style.color = "red";
         return;
     }
 
-    //////////////////////////////////////////////////
-    // CHECK USER
-    //////////////////////////////////////////////////
-
-    const {
-        data:checkUser,
-        error:checkError
-    } = await client
-    .from("users")
-    .select("*")
-    .eq("mobile",mobile);
-
-    if(checkError){
-
-        console.log(checkError);
-
-        document.getElementById("message")
-        .innerHTML="Database Error";
-
-        return;
-    }
-
-    if(checkUser.length > 0){
-
-        document.getElementById("message")
-        .innerHTML="User already exists";
-
-        return;
-    }
-
-    //////////////////////////////////////////////////
-    // INSERT USER
-    //////////////////////////////////////////////////
-
-    const {
-        error
-    } = await client
-    .from("users")
+    const { data, error } = await supabaseClient
+    .from('users')
     .insert([
         {
-            name:name,
-            mobile:mobile,
-            password:password
+            name: name,
+            mobile: mobile,
+            password: password
         }
     ]);
 
     if(error){
-
-        console.log(error);
-
-        document.getElementById("message")
-        .innerHTML="Signup Failed";
+        document.getElementById("message").innerHTML = error.message;
+        document.getElementById("message").style.color = "red";
     }
     else{
+        document.getElementById("message").innerHTML = "Signup Successful";
+        document.getElementById("message").style.color = "green";
 
-        document.getElementById("message")
-        .innerHTML="Signup Successful";
-
-        document.getElementById("signupName").value="";
-        document.getElementById("signupMobile").value="";
-        document.getElementById("signupPassword").value="";
-    }
-}
-
-/////////////////////////////////////////////////////
-// LOGIN
-/////////////////////////////////////////////////////
-
-async function login(){
-
-    let mobile =
-    document.getElementById("loginMobile").value;
-
-    let password =
-    document.getElementById("loginPassword").value;
-
-    const {
-        data,
-        error
-    } = await client
-    .from("users")
-    .select("*")
-    .eq("mobile",mobile)
-    .eq("password",password);
-
-    if(error){
-
-        console.log(error);
-
-        document.getElementById("message")
-        .innerHTML="Login Error";
-
-        return;
-    }
-
-    if(data.length > 0){
-
-        document.getElementById("message")
-        .innerHTML="Login Successful";
-    }
-    else{
-
-        document.getElementById("message")
-        .innerHTML="Invalid Mobile or Password";
+        document.getElementById("name").value = "";
+        document.getElementById("mobile").value = "";
+        document.getElementById("password").value = "";
     }
 }
 
