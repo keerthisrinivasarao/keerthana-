@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student Exam Signup & Login</title>
+<title>Signup & Login</title>
 
 <style>
+
 *{
     margin:0;
     padding:0;
@@ -14,17 +15,17 @@
 }
 
 body{
-    background:linear-gradient(135deg,#4facfe,#00f2fe);
     height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
+    background:linear-gradient(135deg,#4facfe,#00f2fe);
 }
 
 .container{
     width:350px;
     background:white;
-    padding:25px;
+    padding:30px;
     border-radius:15px;
     box-shadow:0 5px 15px rgba(0,0,0,0.3);
 }
@@ -32,7 +33,6 @@ body{
 h2{
     text-align:center;
     margin-bottom:20px;
-    color:#333;
 }
 
 .input-box{
@@ -74,37 +74,35 @@ button:hover{
     cursor:pointer;
 }
 
-#loginPage,#dashboard{
+#loginPage,
+#welcomePage{
     display:none;
 }
 
-.student-details{
-    text-align:center;
+.user-details{
     line-height:35px;
+    font-size:18px;
 }
+
 </style>
 </head>
 
 <body>
 
 <!-- Signup Page -->
+
 <div class="container" id="signupPage">
 
-    <h2>Exam Signup</h2>
+    <h2>Signup</h2>
 
     <div class="input-box">
-        <label>Student Name</label>
+        <label>Name</label>
         <input type="text" id="signupName">
     </div>
 
     <div class="input-box">
-        <label>Branch</label>
-        <input type="text" id="signupBranch">
-    </div>
-
-    <div class="input-box">
-        <label>Hall Ticket Number</label>
-        <input type="text" id="signupHallticket">
+        <label>Mobile Number</label>
+        <input type="text" id="signupMobile">
     </div>
 
     <div class="input-box">
@@ -120,18 +118,19 @@ button:hover{
     <button onclick="signup()">Signup</button>
 
     <div class="link" onclick="showLogin()">
-        Already Signup? Login
+        Already have an account? Login
     </div>
 
 </div>
 
 <!-- Login Page -->
+
 <div class="container" id="loginPage">
 
-    <h2>Student Login</h2>
+    <h2>Login</h2>
 
     <div class="input-box">
-        <label>Student Name</label>
+        <label>Name</label>
         <input type="text" id="loginName">
     </div>
 
@@ -144,75 +143,133 @@ button:hover{
 
 </div>
 
-<!-- Dashboard -->
-<div class="container" id="dashboard">
+<!-- Welcome Page -->
 
-    <h2>Student Details</h2>
+<div class="container" id="welcomePage">
 
-    <div class="student-details">
-        <p><b>Name:</b> <span id="dName"></span></p>
-        <p><b>Branch:</b> <span id="dBranch"></span></p>
-        <p><b>Hall Ticket:</b> <span id="dHallticket"></span></p>
-        <p><b>Email:</b> <span id="dEmail"></span></p>
+    <h2>User Details</h2>
+
+    <div class="user-details">
+
+        <p><b>Name:</b> <span id="showName"></span></p>
+
+        <p><b>Mobile:</b> <span id="showMobile"></span></p>
+
+        <p><b>Email:</b> <span id="showEmail"></span></p>
+
+        <p><b>Password:</b> <span id="showPassword"></span></p>
+
     </div>
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
 
-let studentData = {};
+// Correct URL
+const SUPABASE_URL =
+"https://paxhlgosqmjrbpualroy.supabase.co";
 
-function signup(){
+// Paste FULL anon public key here
+const SUPABASE_ANON_KEY =
+"sb_publishable_6JDa2H1RxowQaJhgI00YNQ_yCSiXPUK";
 
-    studentData.name = document.getElementById("signupName").value;
-    studentData.branch = document.getElementById("signupBranch").value;
-    studentData.hallticket = document.getElementById("signupHallticket").value;
-    studentData.email = document.getElementById("signupEmail").value;
-    studentData.password = document.getElementById("signupPassword").value;
-
-    if(
-        studentData.name === "" ||
-        studentData.branch === "" ||
-        studentData.hallticket === "" ||
-        studentData.email === "" ||
-        studentData.password === ""
-    ){
-        alert("Please fill all fields");
-        return;
-    }
-
-    alert("Signup Successful");
-
-    document.getElementById("signupPage").style.display = "none";
-    document.getElementById("loginPage").style.display = "block";
-}
+const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
 
 function showLogin(){
 
     document.getElementById("signupPage").style.display = "none";
+
     document.getElementById("loginPage").style.display = "block";
 }
 
-function login(){
+async function signup(){
 
-    let loginName = document.getElementById("loginName").value;
-    let loginPassword = document.getElementById("loginPassword").value;
+    let name =
+    document.getElementById("signupName").value;
 
-    if(
-        loginName === studentData.name &&
-        loginPassword === studentData.password
-    ){
+    let mobile =
+    document.getElementById("signupMobile").value;
+
+    let email =
+    document.getElementById("signupEmail").value;
+
+    let password =
+    document.getElementById("signupPassword").value;
+
+    if(name==="" || mobile==="" || email==="" || password===""){
+        alert("Please fill all fields");
+        return;
+    }
+
+    const { error } = await supabaseClient
+    .from("users")
+    .insert([
+        {
+            name:name,
+            mobile:mobile,
+            email:email,
+            password:password
+        }
+    ]);
+
+    if(error){
+
+        alert(error.message);
+
+    }else{
+
+        alert("Signup Successful");
+
+        document.getElementById("signupPage").style.display = "none";
+
+        document.getElementById("loginPage").style.display = "block";
+    }
+}
+
+async function login(){
+
+    let loginName =
+    document.getElementById("loginName").value;
+
+    let loginPassword =
+    document.getElementById("loginPassword").value;
+
+    const { data, error } = await supabaseClient
+    .from("users")
+    .select("*")
+    .eq("name", loginName)
+    .eq("password", loginPassword);
+
+    if(error){
+        alert(error.message);
+        return;
+    }
+
+    if(data.length > 0){
 
         document.getElementById("loginPage").style.display = "none";
-        document.getElementById("dashboard").style.display = "block";
 
-        document.getElementById("dName").innerHTML = studentData.name;
-        document.getElementById("dBranch").innerHTML = studentData.branch;
-        document.getElementById("dHallticket").innerHTML = studentData.hallticket;
-        document.getElementById("dEmail").innerHTML = studentData.email;
+        document.getElementById("welcomePage").style.display = "block";
 
-    }
-    else{
+        document.getElementById("showName").innerHTML =
+        data[0].name;
+
+        document.getElementById("showMobile").innerHTML =
+        data[0].mobile;
+
+        document.getElementById("showEmail").innerHTML =
+        data[0].email;
+
+        document.getElementById("showPassword").innerHTML =
+        data[0].password;
+
+    }else{
+
         alert("Invalid Login Details");
     }
 }
